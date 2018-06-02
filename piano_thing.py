@@ -26,11 +26,22 @@ class PianoThing(object):
 		self.draw_white_notes()
 		self.draw_black_notes()
 		self.playing_notes = set()
+		self.mouseheld = set()
 
 
 	def render(self, screen):
 		screen.blit(self.white_notes_surface, (0,0))
 		screen.blit(self.black_notes_surface, (0,0))
+
+	def check_mouse_click_key(self, position):
+		horz, vert = position
+		for note, rect in self.black_note_rects.items():
+			if rect.collidepoint(position):
+				return note
+		for note, rect in self.white_note_rects.items():
+			if rect.collidepoint(position):
+				return note
+		return None
 
 	def draw_white_notes(self, top_offset = 100, left_offset = 50):
 		self.white_notes_surface = pygame.Surface(self.screen_size)
@@ -119,6 +130,8 @@ class PianoThing(object):
 	def stop_all_notes_not_held(self):
 		keys = pygame.key.get_pressed()
 		for note in ALL_NOTES:
+			if note in self.mouseheld:
+				continue
 			only_note = note[:-1]
 			octave = int(note[-1])
 			if "4" in note and "#" not in note:
@@ -142,7 +155,21 @@ class PianoThing(object):
 					self.remove_from_playing(self.standalone_key_mapping[event.key], 4)
 			if event.key == pygame.K_SPACE:
 				self.stop_all_notes_not_held()
-
+		elif event.type == pygame.MOUSEBUTTONDOWN:
+			note = self.check_mouse_click_key(event.pos)
+			if note:
+				self.mouseheld.add(note)
+				only_note = note[:-1]
+				octave = int(note[-1])
+				self.add_to_playing(only_note, octave)
+		elif event.type == pygame.MOUSEBUTTONUP:
+			keys = pygame.key.get_pressed()
+			for note in self.mouseheld:
+				only_note = note[:-1]
+				octave = int(note[-1])
+				if not keys[pygame.K_SPACE]:
+					self.remove_from_playing(only_note, octave)
+			self.mouseheld = set()
 
 
 def step_to_note(step):
