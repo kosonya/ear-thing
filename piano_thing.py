@@ -27,11 +27,34 @@ class PianoThing(object):
 		self.draw_black_notes()
 		self.playing_notes = set()
 		self.mouseheld = set()
+		self.font = pygame.font.Font(pygame.font.match_font("Arial"), 8)
 
 
 	def render(self, screen):
 		screen.blit(self.white_notes_surface, (0,0))
 		screen.blit(self.black_notes_surface, (0,0))
+		top = 0
+		bottom = self.screen_size[1]
+		height = bottom - top
+		red_surface = pygame.Surface(self.screen_size)
+		red_surface.fill((0,255,0))
+		red_surface.set_colorkey((0,255,0))
+		red_surface.set_alpha(127)
+		for note in self.playing_notes:
+			if "#" in note:
+				rect = self.black_note_rects[note]
+			else:
+				rect = self.white_note_rects[note]
+			width = rect.width
+			left = rect.left
+			right = rect.right
+			rect = pygame.Rect((left, top), (width, height))
+			pygame.draw.rect(red_surface, (255,0,0), rect, 0)
+		screen.blit(red_surface, (0,0))
+
+			
+			
+			
 
 	def check_mouse_click_key(self, position):
 		horz, vert = position
@@ -208,6 +231,7 @@ def main():
 	screen.set_colorkey((0,255,0))
 	
 	while True:
+		screen.fill((255,255,255))
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				sys.exit(0)
