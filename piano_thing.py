@@ -24,16 +24,21 @@ class PianoThing(object):
 		self.screen_size = screen_size
 		self.white_key_size = 30, 120
 		self.black_key_size = 15, 80
-		self.draw_white_notes()
-		self.draw_black_notes()
 		self.playing_notes = set()
 		self.mouseheld = set()
+		self.staff = pygame.image.load("only_staff.png")
+		self.top_offset = 100
+		self.left_offset = 50
+
+		self.draw_white_notes()
+		self.draw_black_notes()
 
 
 
 	def render(self, screen):
 		screen.blit(self.white_notes_surface, (0,0))
 		screen.blit(self.black_notes_surface, (0,0))
+		screen.blit(self.staff, (0,0))
 		top = 0
 		bottom = self.screen_size[1]
 		height = bottom - top
@@ -67,7 +72,9 @@ class PianoThing(object):
 				return note
 		return None
 
-	def draw_white_notes(self, top_offset = 100, left_offset = 50):
+	def draw_white_notes(self):
+		top_offset = self.top_offset
+		left_offset = self.left_offset
 		self.white_notes_surface = pygame.Surface(self.screen_size)
 		self.white_notes_surface.fill((0,255,0))
 		self.white_notes_surface.set_colorkey((0,255,0))
