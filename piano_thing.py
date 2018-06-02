@@ -80,7 +80,7 @@ class PianoThing(object):
 			cur_key += 1
 			self.white_note_rects[note] = rect
 			if note == "C4":
-				pygame.draw.circle(self.white_notes_surface, (0,0,0), (cur_left_offset + self.white_key_size[0]/2, top_offset + int(self.white_key_size[1]*0.8))  , 3, 0)
+				pygame.draw.circle(self.white_notes_surface, (0,0,0), (cur_left_offset + self.white_key_size[0]/2, top_offset + int(self.white_key_size[1]*0.6))  , 3, 0)
 			cur_left_offset += self.white_key_size[0]
 
 
