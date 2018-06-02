@@ -38,14 +38,16 @@ class PianoThing(object):
 		self.white_notes_surface.set_colorkey((0,255,0))
 		cur_key = 0
 		self.white_note_rects = dict()
+		cur_left_offset = left_offset
 		for note in ALL_NOTES:
 			if "#" in note:
 				continue
-			rect = self.draw_white_key(self.white_notes_surface, self.white_key_size, top_offset, left_offset+self.white_key_size[0]*cur_key)
+			rect = self.draw_white_key(self.white_notes_surface, self.white_key_size, top_offset, cur_left_offset)
 			cur_key += 1
 			self.white_note_rects[note] = rect
 			if note == "C4":
-				pygame.draw.circle(self.white_notes_surface, (0,0,0), int(self.white_key_size[1]*0.8), 3, 0)
+				pygame.draw.circle(self.white_notes_surface, (0,0,0), (cur_left_offset + self.white_key_size[0]/2, top_offset + int(self.white_key_size[1]*0.8))  , 3, 0)
+			cur_left_offset += self.white_key_size[0]
 
 
 	def draw_black_notes(self, top_offset = 100, left_offset = 50):
