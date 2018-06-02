@@ -20,6 +20,7 @@ class PianoThing(object):
 			pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
 			pygame.mixer.set_num_channels(88)
 		self.channels = {ALL_NOTES[i]: pygame.mixer.Channel(i) for i in xrange(88)}
+		self.font = pygame.font.Font(pygame.font.match_font("Arial"), 18)
 		self.screen_size = screen_size
 		self.white_key_size = 30, 120
 		self.black_key_size = 15, 80
@@ -27,7 +28,7 @@ class PianoThing(object):
 		self.draw_black_notes()
 		self.playing_notes = set()
 		self.mouseheld = set()
-		self.font = pygame.font.Font(pygame.font.match_font("Arial"), 8)
+
 
 
 	def render(self, screen):
@@ -80,7 +81,18 @@ class PianoThing(object):
 			cur_key += 1
 			self.white_note_rects[note] = rect
 			if note == "C4":
-				pygame.draw.circle(self.white_notes_surface, (0,0,0), (cur_left_offset + self.white_key_size[0]/2, top_offset + int(self.white_key_size[1]*0.6))  , 3, 0)
+				pygame.draw.circle(self.white_notes_surface, (0,0,0), (cur_left_offset + self.white_key_size[0]/2, top_offset + int(self.white_key_size[1]*0.7))  , 3, 0)
+			cur_left_offset += self.white_key_size[0]
+
+
+		cur_key = 0
+		cur_left_offset = left_offset
+		for note in ALL_NOTES:
+			if "#" in note:
+				continue
+			label = self.font.render(note, True, (0,0,0))
+			self.white_notes_surface.blit(label, (cur_left_offset + int(self.white_key_size[0]*0.1), top_offset + int(self.white_key_size[1]*0.8)))
+			cur_key += 1
 			cur_left_offset += self.white_key_size[0]
 
 
