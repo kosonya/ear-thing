@@ -29,6 +29,7 @@ class PianoThing(object):
 		self.staff = pygame.image.load("only_staff.png")
 		self.top_offset = 100
 		self.left_offset = 50
+		self.highlit_notes = dict()
 
 		self.draw_white_notes()
 		self.draw_black_notes()
@@ -46,7 +47,7 @@ class PianoThing(object):
 		red_surface.fill((0,255,0))
 		red_surface.set_colorkey((0,255,0))
 		red_surface.set_alpha(127)
-		for note in self.playing_notes:
+		for note in self.highlit_notes:
 			if "#" in note:
 				rect = self.black_note_rects[note]
 			else:
@@ -55,9 +56,19 @@ class PianoThing(object):
 			left = rect.left
 			right = rect.right
 			rect = pygame.Rect((left, top), (width, height))
-			pygame.draw.rect(red_surface, (255,0,0), rect, 0)
+			pygame.draw.rect(red_surface, self.highlit_notes[note], rect, 0)
 		screen.blit(red_surface, (0,0))
 
+	def highlight_note(self, n_o, color=(255,0,0)):
+		self.highlit_notes[n_o] = color
+
+	def unhighlight_note(self, n_o):
+		if n_o in self.highlit_notes:
+			del self.highlit_notes[n_o]
+
+	def unhighlight_all(self):
+		self.highlit_notes = dict()
+			
 			
 			
 			
@@ -146,9 +157,9 @@ class PianoThing(object):
 			sample = pygame.mixer.Sound(path)
 			self.samples[note] = sample
 
-	def play_note(self, note, octave):
+	def play_note(self, note, octave, maxtime=0):
 		n_o = str(note) + str(octave)
-		self.channels[n_o].play(self.samples[n_o], loops=0, maxtime=0, fade_ms=0)
+		self.channels[n_o].play(self.samples[n_o], loops=0, maxtime=maxtime, fade_ms=0)
 
 	def stop_note(self, note, octave):
 		n_o = str(note) + str(octave)
@@ -158,16 +169,26 @@ class PianoThing(object):
 		for channel in self.channels.values():
 			channel.stop()
 
-	def add_to_playing(self, note, octave):
+	def add_to_playing(self, note, octave, color=(255,0,0), maxtime=0):
 		n_o = str(note) + str(octave)
 		self.playing_notes.add(n_o)
-		self.play_note(note, octave)
+		self.play_note(note, octave, maxtime=maxtime)
+		self.highlight_note(n_o, color=color)
 
 	def remove_from_playing(self, note, octave):
 		n_o = str(note) + str(octave)
 		if n_o in self.playing_notes:
 			self.playing_notes.remove(n_o)
 		self.stop_note(note, octave)
+		self.unhighlight_note(n_o)
+
+	def remove_all_from_playing(self):
+		while len(self.playing_notes) > 0:
+			note = self.playing_notes.pop()
+			only_note = note[:-1]
+			octave = int(note[-1])
+			self.remove_from_playing(only_note, octave)
+			self.unhighlight_note(note)
 	
 	def stop_all_notes_not_held(self):
 		keys = pygame.key.get_pressed()
