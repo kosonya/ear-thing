@@ -41,21 +41,22 @@ def main():
 		played_step = piano_thing.note_to_step(played_note)
 		guessed_step = piano_thing.note_to_step(guessed_note)
 
+
 		played_global_step = piano_thing.note_and_octave_to_global_step(played_note, played_octave)
 		guessed_global_step = piano_thing.note_and_octave_to_global_step(guessed_note, guessed_octave)
 
 		if played == guessed:
 			accuracy += 1.0
-			print played, guessed
 		if played_note == guessed_note:
 			accuracy_mod_12 += 1
 		mean_absolute_distance += abs(played_global_step - guessed_global_step)
 		mean_absolute_distance_mod_12 += abs(played_step - guessed_step)
 
+
 	accuracy = 100.0 * accuracy / n
 	accuracy_mod_12 = 100.0 * accuracy_mod_12 / n
-	mean_absolute_distance = 100.0 * mean_absolute_distance / n
-	mean_absolute_distance_mod_12 = 100.0 * mean_absolute_distance_mod_12 / n
+	mean_absolute_distance = mean_absolute_distance / n
+	mean_absolute_distance_mod_12 = mean_absolute_distance_mod_12 / n
 
 	print "Accuracy:", accuracy, "%"
 	print "Accuracy mod 12:", accuracy_mod_12, "%"
